@@ -1,0 +1,12 @@
+name: CAFO-Website-August-2021
+title: CAFO-Website-August-2021
+username:
+account: cafo-project
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4515172
+bundleId: 4945027
+url: https://cafo-project.shinyapps.io/CAFO-Website-August-2021/
+when: 1629465910.57133
+asMultiple: FALSE
+asStatic: FALSE

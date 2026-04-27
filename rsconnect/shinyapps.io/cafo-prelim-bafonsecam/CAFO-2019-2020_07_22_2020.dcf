@@ -1,0 +1,13 @@
+name: CAFO-2019-2020_07_22_2020
+title: CAFO-2019-2020_07_22_2020
+username:
+account: cafo-prelim-bafonsecam
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2602038
+bundleId: 3422592
+url: https://cafo-prelim-bafonsecam.shinyapps.io/CAFO-2019-2020_07_22_2020/
+when: 1595442561.94664
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: testwebengine/app.R

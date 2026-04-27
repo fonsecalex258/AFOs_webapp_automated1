@@ -1,0 +1,11 @@
+name: LivingSR
+title: LivingSR
+username:
+account: livestock-lsr
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5472417
+bundleId: 11537241
+url: https://livestock-lsr.shinyapps.io/LivingSR/
+asMultiple: FALSE
+asStatic: FALSE

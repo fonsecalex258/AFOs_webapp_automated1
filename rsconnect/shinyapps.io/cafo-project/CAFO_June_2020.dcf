@@ -1,0 +1,12 @@
+name: CAFO_June_2020
+title: CAFO_June_2020
+username:
+account: cafo-project
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3493414
+bundleId: 4119569
+url: https://cafo-project.shinyapps.io/CAFO_June_2020/
+when: 1611109856.34557
+asMultiple: FALSE
+asStatic: FALSE

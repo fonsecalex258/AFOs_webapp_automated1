@@ -1,0 +1,11 @@
+name: Updated-LSR
+title: Updated-LSR
+username:
+account: cafo-project
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5464691
+bundleId: 8219136
+url: https://cafo-project.shinyapps.io/Updated-LSR/
+asMultiple: FALSE
+asStatic: FALSE

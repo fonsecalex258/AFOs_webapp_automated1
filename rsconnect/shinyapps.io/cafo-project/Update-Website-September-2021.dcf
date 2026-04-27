@@ -1,0 +1,12 @@
+name: Update-Website-September-2021
+title: Update-Website-September-2021
+username:
+account: cafo-project
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4606500
+bundleId: 8383607
+url: https://cafo-project.shinyapps.io/Update-Website-September-2021/
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: susuna.R
