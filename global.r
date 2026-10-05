@@ -15,41 +15,23 @@ library(tesseract)
 ###
 load("RData")
 
-initialize_cache <- function(){
+get_cache_file <- function(filename) {
   
-  required_files <- c(
-    "included_cache_2.rds",
-#    "excluded_cache.rds",
-    "cross_base_cache.rds",
-    "included_cache_1.rds",
-    "forest_case_cache.rds",
-#  "refs_cache.rds",
-    "forest_cohort_cache.rds"
+  cache_version <- readLines(
+    "cache/latest_version.txt",
+    warn = FALSE
   )
   
-  missing_files <- required_files[!file.exists(required_files)]
-  
-  if(length(missing_files) > 0){
-    
-    stop(
-      paste0(
-        "❌ Missing cache files:\n",
-        paste(missing_files, collapse = "\n"),
-        "\n\n👉 Run: source('update_cache.R') before launching the app."
-      )
-    )
-    
-  } else {
-    message("✅ Cache available")
-  }
+  file.path(
+    "cache",
+    cache_version,
+    filename
+  )
 }
 
-
-initialize_cache()
-
 #included_df        <- readRDS("included_cache.rds")
-included_df2        <- readRDS("included_cache_1.rds")
-included_df  <- readRDS("included_cache_2.rds")
+included_df2        <- readRDS(get_cache_file("included_cache_1.rds"))
+included_df  <- readRDS(get_cache_file("included_cache_2.rds"))
 
 names(included_df2)[11] <- 'Country'
 
@@ -92,11 +74,11 @@ included_df <- included_df %>%
 #saveRDS(included_subset, "included_subset_cache.rds")
 
 #inclusion123 <- readRDS("inclusion_cache.rds")
-forest_case_df <- readRDS("forest_case_cache.rds")
+forest_case_df <- readRDS(get_cache_file("forest_case_cache.rds"))
 #### Exclusion data
 timelineV02 <- readxl::read_xlsx("datasets/timeline_V01.xlsx")
 #exclusion <- readxl::read_xlsx("datasets/excluded.xlsx")
-cross_clean <- readRDS("cross_base_cache.rds")
+cross_clean <- readRDS(get_cache_file("cross_base_cache.rds"))
 
 #######
 #cafo_map <- readxl::read_xlsx("datasets/included.xlsx")
@@ -137,6 +119,7 @@ cafoo_map_sum <- cafo_map %>%
   
 #  return(df)
 #}
+
 
 # Function to get latitude and longitude
 get_lat_long <- function(country_name) {
@@ -209,10 +192,10 @@ forest_cross1_df <- bind_rows(cross_base, old_cross_s)
 #forest_cohort_df <- read_excel("datasets/distiller_cohort.xlsx")
 #forest_case_df <- read_excel("datasets/distiller_casecontrol.xlsx")
 
-forest_case_df <- readRDS("forest_case_cache.rds")
+forest_case_df <- readRDS(get_cache_file("forest_case_cache.rds"))
 forest_case_df$Refid <- as.character(forest_case_df$Refid)
 
-forest_cohort_df <- readRDS("forest_cohort_cache.rds")
+forest_cohort_df <- readRDS(get_cache_file("forest_cohort_cache.rds"))
 forest_cohort_df$Refid <- as.character(forest_cohort_df$Refid)
 
 
@@ -910,9 +893,154 @@ up_forest_state1$shortexpo <- ifelse(up_forest_state1$numberofwords>=6, paste(up
 
 up_forest_state1 <- up_forest_state1 %>% mutate(inter_95 = ifelse(is.na(lowerci), paste(up_forest_state1$yi), paste(up_forest_state1$yi,"[",up_forest_state1$lowerci,",", up_forest_state1$upperci,"]")))
 
+####
+RB_1 <-  forest_cross %>% filter(health_event== "Yes") %>% select(Refid,outcome, category,exposure,covariates ,confounding_V2, description_5_V2)
+RB_2 <-  forest_cross %>% filter(rare_outcome== "Yes") %>% select(Refid,outcome,category, exposure, covariates ,confounding, description_5)
+
+ROB_Cohort_1 <-  forest_cohort %>% select(Refid,outcome,category,exposure,`Covariates adjusted for (include in alphbetical order, separated by , ). If none - say none`, confounding,description_4)
+ROB_Case_1 <-  forest_case %>% select(Refid,outcome,category,exposure, covariates , confounding,description_5)
+
+ROB_confounding <-  bind_rows(RB_1,RB_2, ROB_Cohort_1, ROB_Case_1)
+
+###### a dataset to ROB
+ROB_1 <-  forest_cross %>% filter(health_event== "Yes") %>% select(description_1_V2, description_2_V2, description_3_V2, description_4_V2, description_5_V2,overall_bias_V2,IDD,IDD_2)
+ROB_2 <-  forest_cross %>% filter(rare_outcome== "Yes") %>% select(description_1, description_2,description_3, description_4, description_5, overall_bias, IDD, IDD_2)
+#ROB_3 <-  forest_cross_event %>% filter(event_state== "State") %>% select(description_1, description_2,description_3, description_4, description_5, overall_bias, IDD, IDD_2)colnames(ROB_1) <- c("Differential information", "Differential information 2", "Selection bias","Selection_bias 2","Confounding", "Overall bias", "IDD", "IDD_2")
+colnames(ROB_1) <- c("Differential information", "Differential information 2", "Selection bias","Selection_bias 2","Confounding", "Overall bias", "IDD", "IDD_2")
+colnames(ROB_2) <- c("Differential information", "Differential information 2", "Selection bias","Selection_bias 2","Confounding", "Overall bias", "IDD", "IDD_2")
+
+#colnames(ROB_1) <- c("Question 1", "Question 2", "Question 3","Question 4","Question 5", "Overall bias", "IDD", "IDD_2")
+#colnames(ROB_2) <- c("Question 1", "Question 2", "Question 3","Question 4","Question 4", "Overall bias", "IDD", "IDD_2")
 
 
 
+ROB_Cohort <-  forest_cohort %>% select(description_1, description_2,description_3, description_4, description_5,description_6, description_7,overall_bias,IDD, IDD_2)
+ROB_Case <-  forest_case %>% select(description_1, description_2,description_3, description_4, description_5, overall_bias, IDD, IDD_2)
+colnames(ROB_Case) <- c("Differential information", "Differential information 2", "Selection bias","Selection_bias 2","Confounding", "Overall bias", "IDD", "IDD_2")
+#colnames(ROB_Case) <- c("Question 1", "Question 2", "Question 3","Question 4","Question 5", "Overall bias", "IDD", "IDD_2")
+
+colnames(ROB_Cohort) <- c("Selection bias_6", "Differential information", "Differential information 2_6","Confounding","Differential information 3_6", "Differential information 4_6", "Selection bias 2_6", "Overall bias","IDD", "IDD_2")
+#colnames(ROB_Cohort) <- c("Question 6", "Question 1", "Question 7","Question 5","Question 8", "Question 9", "Question 10", "Overall bias","IDD", "IDD_2")
+
+ROB_joint <-  bind_rows(ROB_1,ROB_2, ROB_Cohort, ROB_Case)
+
+
+
+###### a dataset to ROB for traffic light graphic
+ROB_1_event <-  forest_cross %>% filter(health_event== "Yes") %>% select(Differential_information_bias_1_V2, Differential_information_bias2_V2, selection_bias_1_V2, selection_bias_2_V2, confounding_V2,overall_bias_V2,IDD,IDD_2, category)
+ROB_2_event <-  forest_cross %>% filter(rare_outcome== "Yes") %>% select(Differential_information_bias, Differential_information_bias2,selection_bias_1, selection_bias_2, confounding, overall_bias, IDD, IDD_2, category)
+#colnames(ROB_1_event) <- c("Misclassification of exposure", "Misclassification of outcome", "Selection bias","Selection_bias 2",
+#                           "Confounding", 
+#                           "Overall bias", "IDD", "IDD_2", "category")
+colnames(ROB_1_event) <- c("Question 1", "Question 2", "Question 3","Question 4",
+                           "Question 5", 
+                           "Overall bias", "IDD", "IDD_2", "category")
+#colnames(ROB_2_event) <- c("Misclassification of exposure", "Misclassification of outcome", "Selection bias","Selection_bias 2",
+#                           "Confounding", 
+#                           "Overall bias", "IDD", "IDD_2", "category")
+colnames(ROB_2_event) <- c("Question 1", "Question 2", "Question 3","Question 4",
+                           "Question 5", 
+                           "Overall bias", "IDD", "IDD_2", "category")
+
+ROB_Cohort_tl <-  forest_cohort %>% select(selection_bias, information_bias,information_bias_2, confounding, information_bias_3,information_bias_4, selection_bias_2,overall_bias,IDD, IDD_2,category)
+
+ROB_Case_tl <-  forest_case %>% select(Differential_information_bias, Differential_information_bias2,selection_bias_1, selection_bias_2, confounding, overall_bias, IDD, IDD_2, category)
+#colnames(ROB_Case_tl) <- c("Misclassification of exposure", "Misclassification of outcome", "Selection bias","Selection_bias 2",
+#                           "Confounding", 
+#                           "Overall bias", "IDD", "IDD_2", "category")
+colnames(ROB_Case_tl) <- c("Question 1", "Question 2", "Question 3","Question 4",
+                           "Question 5", 
+                           "Overall bias", "IDD", "IDD_2", "category")
+#
+#colnames(ROB_Cohort_tl) <- c("Selection bias", "Misclassification of exposure", "Misclassification of outcome",
+#                             "Confounding",
+#                             "Differential information 3", "Differential information 4", "Selection_bias 2", "Overall bias","IDD", "IDD_2", "category")
+colnames(ROB_Cohort_tl) <- c("Question 6", "Question 1", "Question 7",
+                             "Question 5",
+                             "Question 8", "Question 9", "Question 10", "Overall bias","IDD", "IDD_2", "category")
+
+ROB_joint_tl <-  bind_rows(ROB_1_event,ROB_2_event, ROB_Cohort_tl, ROB_Case_tl)
+
+#ROB_joint_tl$'Selection bias'[ROB_joint_tl$'Selection bias' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Selection_bias 2'[ROB_joint_tl$'Selection_bias 2' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Misclassification of exposure'[ROB_joint_tl$'Misclassification of exposure' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Misclassification of outcome'[ROB_joint_tl$'Misclassification of outcome' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Differential information 3'[ROB_joint_tl$'Differential information 3' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Differential information 4'[ROB_joint_tl$'Differential information 4' == 'Definitely yes (low risk of bias)'] <- 'Low'
+#ROB_joint_tl$'Confounding'[ROB_joint_tl$'Confounding' == 'Definitely yes (low risk of bias)'] <- 'Low'
+
+ROB_joint_tl$'Question 1'[ROB_joint_tl$'Question 1' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 2'[ROB_joint_tl$'Question 2' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 3'[ROB_joint_tl$'Question 3' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 4'[ROB_joint_tl$'Question 4' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 5'[ROB_joint_tl$'Question 5' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 6'[ROB_joint_tl$'Question 6' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 7'[ROB_joint_tl$'Question 7' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 8'[ROB_joint_tl$'Question 8' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 9'[ROB_joint_tl$'Question 9' == 'Definitely yes (low risk of bias)'] <- 'Low'
+ROB_joint_tl$'Question 10'[ROB_joint_tl$'Question 10' == 'Definitely yes (low risk of bias)'] <- 'Low'
+
+
+#ROB_joint_tl$'Selection bias'[ROB_joint_tl$'Selection bias' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Selection_bias 2'[ROB_joint_tl$'Selection_bias 2' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Misclassification of exposure'[ROB_joint_tl$'Misclassification of exposure' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Misclassification of outcome'[ROB_joint_tl$'Misclassification of outcome' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Differential information 3'[ROB_joint_tl$'Differential information 3' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Differential information 4'[ROB_joint_tl$'Differential information 4' == 'Probably yes'] <- 'Likely Low'
+#ROB_joint_tl$'Confounding'[ROB_joint_tl$'Confounding' == 'Probably yes'] <- 'Likely Low'
+
+ROB_joint_tl$'Question 1'[ROB_joint_tl$'Question 1' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 2'[ROB_joint_tl$'Question 2' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 3'[ROB_joint_tl$'Question 3' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 4'[ROB_joint_tl$'Question 4' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 5'[ROB_joint_tl$'Question 5' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 6'[ROB_joint_tl$'Question 6' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 7'[ROB_joint_tl$'Question 7' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 8'[ROB_joint_tl$'Question 8' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 9'[ROB_joint_tl$'Question 9' == 'Probably yes'] <- 'Likely Low'
+ROB_joint_tl$'Question 10'[ROB_joint_tl$'Question 10' == 'Probably yes'] <- 'Likely Low'
+
+
+#ROB_joint_tl$'Selection bias'[ROB_joint_tl$'Selection bias' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Selection_bias 2'[ROB_joint_tl$'Selection_bias 2' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Misclassification of exposure'[ROB_joint_tl$'Misclassification of exposure' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Misclassification of outcome'[ROB_joint_tl$'Misclassification of outcome' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Differential information 3'[ROB_joint_tl$'Differential information 3' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Differential information 4'[ROB_joint_tl$'Differential information 4' == 'Probably no'] <- 'Likely High'
+#ROB_joint_tl$'Confounding'[ROB_joint_tl$'Confounding' == 'Probably no'] <- 'Likely High'
+
+ROB_joint_tl$'Question 1'[ROB_joint_tl$'Question 1' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 2'[ROB_joint_tl$'Question 2' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 3'[ROB_joint_tl$'Question 3' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 4'[ROB_joint_tl$'Question 4' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 5'[ROB_joint_tl$'Question 5' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 6'[ROB_joint_tl$'Question 6' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 7'[ROB_joint_tl$'Question 7' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 8'[ROB_joint_tl$'Question 8' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 9'[ROB_joint_tl$'Question 9' == 'Probably no'] <- 'Likely High'
+ROB_joint_tl$'Question 10'[ROB_joint_tl$'Question 10' == 'Probably no'] <- 'Likely High'
+
+
+
+
+#ROB_joint_tl$'Selection bias'[ROB_joint_tl$'Selection bias' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Selection_bias 2'[ROB_joint_tl$'Selection_bias 2' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Misclassification of exposure'[ROB_joint_tl$'Misclassification of exposure' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Misclassification of outcome'[ROB_joint_tl$'Misclassification of outcome' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Differential information 3'[ROB_joint_tl$'Differential information 3' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Differential information 4'[ROB_joint_tl$'Differential information 4' == 'Definitely no (high risk of bias)'] <- 'High'
+#ROB_joint_tl$'Confounding'[ROB_joint_tl$'Confounding' == 'Definitely no (high risk of bias)'] <- 'High'
+
+ROB_joint_tl$'Question 1'[ROB_joint_tl$'Question 1' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 2'[ROB_joint_tl$'Question 2' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 3'[ROB_joint_tl$'Question 3' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 4'[ROB_joint_tl$'Question 4' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 5'[ROB_joint_tl$'Question 5' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 6'[ROB_joint_tl$'Question 6' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 7'[ROB_joint_tl$'Question 7' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 8'[ROB_joint_tl$'Question 8' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 9'[ROB_joint_tl$'Question 9' == 'Definitely no (high risk of bias)'] <- 'High'
+ROB_joint_tl$'Question 10'[ROB_joint_tl$'Question 10' == 'Definitely no (high risk of bias)'] <- 'High'
 
 
 ##########

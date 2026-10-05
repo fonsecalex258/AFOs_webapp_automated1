@@ -191,13 +191,17 @@ increases the potential for identification of false associations due to random e
 
   ###
   
+#  refs_data <- reactive({
+    
+#    if(!file.exists("refs_cache.rds")){
+#      stop("❌ refs_cache.rds not found. Run cache script first.")
+#    }
+    
+#    readRDS("refs_cache.rds")
+#  })
+  
   refs_data <- reactive({
-    
-    if(!file.exists("refs_cache.rds")){
-      stop("❌ refs_cache.rds not found. Run cache script first.")
-    }
-    
-    readRDS("refs_cache.rds")
+    readRDS(get_cache_file("refs_cache.rds"))
   })
   
   last_screening_date <- reactive({
@@ -3356,24 +3360,24 @@ increases the potential for identification of false associations due to random e
     names(ROB_joint)[names(ROB_joint) == 'Differential information 4_6'] <- 'Question 9. Can we be confident in the assessment of outcome?'
     names(ROB_joint)[names(ROB_joint) == 'Selection bias 2_6'] <- 'Question 10. Was the follow up of cohorts adequate?'
     
-#    names(ROB_joint)[names(ROB_joint) == 'Question 1'] <- 'Question 1. Can we be confident in the assessment of exposure?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 2'] <- 'Question 2. Can we be confident that those who were exposed had developed the outcome of interest and unexposed had not?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 3'] <- 'Question 3. Were those who were exposed and developed the outcome of interest properly selected?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 4'] <- 'Question 4. Were those who were exposed and did not develop the outcome of interest properly selected?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 5'] <- 'Question 5. Was statistical adjustment carried out for important confounding variables?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 1'] <- 'Question 1. Can we be confident in the assessment of exposure?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 2'] <- 'Question 2. Can we be confident that those who were exposed had developed the outcome of interest and unexposed had not?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 3'] <- 'Question 3. Were those who were exposed and developed the outcome of interest properly selected?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 4'] <- 'Question 4. Were those who were exposed and did not develop the outcome of interest properly selected?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 5'] <- 'Question 5. Was statistical adjustment carried out for important confounding variables?'
     
-#    names(ROB_joint)[names(ROB_joint) == 'Differential information'] <- 'Question 1. Can we be confident in the assessment of exposure?'
-#    names(ROB_joint)[names(ROB_joint) == 'Differential information 2'] <- 'Question 2. Can we be confident that those who were exposed had developed the outcome of interest and unexposed had not?'
-#    names(ROB_joint)[names(ROB_joint) == 'Selection bias'] <- 'Question 3. Were those who were exposed and developed the outcome of interest properly selected?'
-#    names(ROB_joint)[names(ROB_joint) == 'Selection_bias 2'] <- 'Question 4. Were those who were exposed and did not develop the outcome of interest properly selected?'
-#    names(ROB_joint)[names(ROB_joint) == 'Confounding'] <- 'Question 5. Was statistical adjustment carried out for important confounding variables?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Differential information'] <- 'Question 1. Can we be confident in the assessment of exposure?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Differential information 2'] <- 'Question 2. Can we be confident that those who were exposed had developed the outcome of interest and unexposed had not?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Selection bias'] <- 'Question 3. Were those who were exposed and developed the outcome of interest properly selected?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Selection_bias 2'] <- 'Question 4. Were those who were exposed and did not develop the outcome of interest properly selected?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Confounding'] <- 'Question 5. Was statistical adjustment carried out for important confounding variables?'
     
     
-#    names(ROB_joint)[names(ROB_joint) == 'Question 6'] <- 'Question 6. Was selection of exposed and non-exposed cohorts drawn from the same population?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 7'] <- 'Question 7. Can we be confident that the outcome of interest was not present at start of study?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 8'] <- 'Question 8. Can we be confident in the assessment of the presence or absence of prognostic factors?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 9'] <- 'Question 9. Can we be confident in the assessment of outcome?'
-#    names(ROB_joint)[names(ROB_joint) == 'Question 10'] <- 'Question 10. Was the follow up of cohorts adequate?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 6'] <- 'Question 6. Was selection of exposed and non-exposed cohorts drawn from the same population?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 7'] <- 'Question 7. Can we be confident that the outcome of interest was not present at start of study?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 8'] <- 'Question 8. Can we be confident in the assessment of the presence or absence of prognostic factors?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 9'] <- 'Question 9. Can we be confident in the assessment of outcome?'
+    #    names(ROB_joint)[names(ROB_joint) == 'Question 10'] <- 'Question 10. Was the follow up of cohorts adequate?'
     
     
     
@@ -3385,7 +3389,8 @@ increases the potential for identification of false associations due to random e
     #gew1<- gew1[c(1,2, 3, 4, 5, 9,10)]
     t(gew1low[1,])
     
-  }) 
+  })
+  
   
   
   #####
@@ -3767,69 +3772,69 @@ increases the potential for identification of false associations due to random e
       #VERBAL = color_tile("white", "red"),
       #WRITTEN = color_tile("white", "red"),
       "Question 1" = formatter("span",
-                                                  style = j ~ style(display  = "block",
-                                                                    "border-radius" = "55%",
-                                                                    height="55px",
-                                                                    margin="auto",
-                                                                    width="55px",
-                                                                    "font-size"="11px", 
-                                                                    "line-height"="55px",
-                                                                    "text-align"="center",
-                                                                    "padding-right" = "4px",
-                                                                    color = "black",
-                                                                    "background-color" = sapply(j,bg.picker1))
-                                                  
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))
+                               
       ),
       "Question 2" = formatter("span",
-                                                 style = j ~ style(display  = "block",
-                                                                   "border-radius" = "55%",
-                                                                   height="55px",
-                                                                   margin="auto",
-                                                                   width="55px",
-                                                                   "font-size"="11px", 
-                                                                   "line-height"="55px",
-                                                                   "text-align"="center",
-                                                                   "padding-right" = "4px",
-                                                                   color = "black",
-                                                                   "background-color" = sapply(j,bg.picker1))
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))
       ),
       
       "Question 3" = formatter("span",
-                                   style = j ~ style(display  = "block",
-                                                     "border-radius" = "55%",
-                                                     height="55px",
-                                                     margin="auto",
-                                                     width="55px",
-                                                     "font-size"="11px", 
-                                                     "line-height"="55px",
-                                                     "text-align"="center",
-                                                     "padding-right" = "4px",
-                                                     color = "black",
-                                                     "background-color" = sapply(j,bg.picker1))),
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))),
       "Question 4" = formatter("span",
-                                     style = j ~ style(display  = "block",
-                                                       "border-radius" = "55%",
-                                                       height="55px",
-                                                       margin="auto",
-                                                       width="55px",
-                                                       "font-size"="11px", 
-                                                       "line-height"="55px",
-                                                       "text-align"="center",
-                                                       "padding-right" = "4px",
-                                                       color = "black",
-                                                       "background-color" = sapply(j,bg.picker1))),
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))),
       "Question 5" = formatter("span",
-                                style = j ~ style(display  = "block",
-                                                  "border-radius" = "55%",
-                                                  height="55px",
-                                                  margin="auto",
-                                                  width="55px",
-                                                  "font-size"="11px", 
-                                                  "line-height"="55px",
-                                                  "text-align"="center",
-                                                  "padding-right" = "4px",
-                                                  color = "black",
-                                                  "background-color" = sapply(j,bg.picker1))),
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))),
       "Overall bias" = formatter("span",
                                  style = j ~ style(display  = "block",
                                                    "border-radius" = "50%",
@@ -3843,17 +3848,17 @@ increases the potential for identification of false associations due to random e
                                                    color = "black",
                                                    "background-color" = sapply(j,bg.picker1))),
       "Question 6" = formatter("span",
-                                               style = j ~ style(display  = "block",
-                                                                 "border-radius" = "55%",
-                                                                 height="55px",
-                                                                 margin="auto",
-                                                                 width="55px",
-                                                                 "font-size"="11px", 
-                                                                 "line-height"="55px",
-                                                                 "text-align"="center",
-                                                                 "padding-right" = "4px",
-                                                                 color = "black",
-                                                                 "background-color" = sapply(j,bg.picker1))),
+                               style = j ~ style(display  = "block",
+                                                 "border-radius" = "55%",
+                                                 height="55px",
+                                                 margin="auto",
+                                                 width="55px",
+                                                 "font-size"="11px", 
+                                                 "line-height"="55px",
+                                                 "text-align"="center",
+                                                 "padding-right" = "4px",
+                                                 color = "black",
+                                                 "background-color" = sapply(j,bg.picker1))),
       "Question 8" = formatter("span",
                                style = j ~ style(display  = "block",
                                                  "border-radius" = "55%",
@@ -3879,6 +3884,19 @@ increases the potential for identification of false associations due to random e
                                                  color = "black",
                                                  "background-color" = sapply(j,bg.picker1))),
       "Question 10" = formatter("span",
+                                style = j ~ style(display  = "block",
+                                                  "border-radius" = "55%",
+                                                  height="55px",
+                                                  margin="auto",
+                                                  width="55px",
+                                                  "font-size"="11px", 
+                                                  "line-height"="55px",
+                                                  "text-align"="center",
+                                                  "padding-right" = "4px",
+                                                  color = "black",
+                                                  "background-color" = sapply(j,bg.picker1))),
+      
+      "Question 7" = formatter("span",
                                style = j ~ style(display  = "block",
                                                  "border-radius" = "55%",
                                                  height="55px",
@@ -3889,26 +3907,14 @@ increases the potential for identification of false associations due to random e
                                                  "text-align"="center",
                                                  "padding-right" = "4px",
                                                  color = "black",
-                                                 "background-color" = sapply(j,bg.picker1))),
-      
-      "Question 7" = formatter("span",
-                                               style = j ~ style(display  = "block",
-                                                                 "border-radius" = "55%",
-                                                                 height="55px",
-                                                                 margin="auto",
-                                                                 width="55px",
-                                                                 "font-size"="11px", 
-                                                                 "line-height"="55px",
-                                                                 "text-align"="center",
-                                                                 "padding-right" = "4px",
-                                                                 color = "black",
-                                                                 "background-color" = sapply(j,bg.picker1)))
+                                                 "background-color" = sapply(j,bg.picker1)))
       
       
     )), rownames = F, escape = F, selection = c("single"),class="compact",options = list(ordering=F, bFilter=F))
     
     
   })
+  
   
   
   ####### traffic for AR
@@ -4572,24 +4578,47 @@ increases the potential for identification of false associations due to random e
 #    readRDS("included_light.rds")
 #  })
   
+#  included_data <- reactive({
+#    readRDS("included_cache_2.rds")
+#  })
+  
   included_data <- reactive({
-    readRDS("included_cache_2.rds")
+    readRDS(get_cache_file("included_cache_2.rds"))
   })
   
-  excluded_data <- reactive({
+#  excluded_data <- reactive({
     
-    validate(
-      need(file.exists("excluded_cache.rds"),
-           "Excluded data not available")
+#    validate(
+#      need(file.exists("excluded_cache.rds"),
+#           "Excluded data not available")
+#    )
+    
+#    df <- readRDS("excluded_cache.rds")
+    
+#    # enforce character (good practice)
+#    df[] <- lapply(df, as.character)
+    
+#    df
+#  })
+  
+excluded_data <- reactive({
+
+  cache_file <- get_cache_file("excluded_cache.rds")
+
+  validate(
+    need(
+      file.exists(cache_file),
+      "Excluded data not available"
     )
-    
-    df <- readRDS("excluded_cache.rds")
-    
-    # enforce character (good practice)
-    df[] <- lapply(df, as.character)
-    
-    df
-  })
+  )
+
+  df <- readRDS(cache_file)
+
+  # Enforce character (good practice)
+  df[] <- lapply(df, as.character)
+
+  df
+})  
   
   
   ### For Neuro

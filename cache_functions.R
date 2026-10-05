@@ -13,8 +13,8 @@ BASE_URL <- "https://v1serv-prod.evidencepartners.com"
 # USER CONFIG
 # ==============================
 
-username <- "XX"
-password <- "AA"
+# DistillerSR credentials are intentionally NOT stored in this file.
+# They are requested at runtime so this script can be safely pushed to GitHub.
 
 project_id <- 36598
 
@@ -27,8 +27,24 @@ saved_report_id_excluded <- 5427
 
 get_distiller_token <- function(){
   
-  if(username == "" || password == ""){
-    stop("❌ Missing credentials")
+  if(!requireNamespace("rstudioapi", quietly = TRUE)){
+    stop("❌ Package 'rstudioapi' is required for credential entry.")
+  }
+  
+  # Ask for username
+  username <- rstudioapi::showPrompt(
+    title = "DistillerSR authentication",
+    message = "Enter your DistillerSR username:",
+    default = ""
+  )
+  
+  # Ask for password
+  password <- rstudioapi::askForPassword(
+    prompt = "Enter your DistillerSR password"
+  )
+  
+  if(!nzchar(username) || !nzchar(password)){
+    stop("❌ Missing DistillerSR credentials")
   }
   
   auth_response <- POST(
@@ -37,7 +53,11 @@ get_distiller_token <- function(){
     accept_json()
   )
   
-  stop_for_status(auth_response)
+  cat("Authentication status:", status_code(auth_response), "\n")
+  
+  if(status_code(auth_response) != 200){
+    stop("❌ DistillerSR authentication failed")
+  }
   
   content(auth_response)$token
 }
@@ -591,6 +611,4 @@ extract_cohort_table <- function(parsed){
 # ==============================
 # ALIGN WITH EXCEL STRUCTURE
 # ==============================
-
-
 

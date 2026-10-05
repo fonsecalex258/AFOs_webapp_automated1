@@ -1,11 +1,11 @@
 name: app_automated
-title: app_automated
+title: CAFO_review-main 2 copy
 username: livestock-lsr
 account: livestock-lsr
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 17044253
-bundleId: 11912385
+bundleId: 11989491
 url: https://livestock-lsr.shinyapps.io/app_automated/
 version: 1
 asMultiple: FALSE
